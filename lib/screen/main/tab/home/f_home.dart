@@ -1,7 +1,6 @@
+import 'package:fast_app_base/screen/main/fab/w_floating_daagn_button.riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../fab/floating_small_provider.dart';
 
 class HomeFragment extends ConsumerStatefulWidget {
   const HomeFragment({super.key});
@@ -16,11 +15,12 @@ class _HomeFragmentState extends ConsumerState<HomeFragment> {
   @override
   void initState() {
     scrollController.addListener(() {
-      final isSmall = ref.read(isFloatingButtonSmallProvider);
-      if (scrollController.position.pixels > 100 && !isSmall) {
-        ref.read(isFloatingButtonSmallProvider.notifier).change(ref, true);
-      } else if (scrollController.position.pixels < 100 && isSmall) {
-        ref.read(isFloatingButtonSmallProvider.notifier).change(ref, false);
+      final floatingState = ref.read(floatingButtonStateProvider);
+
+      if (scrollController.position.pixels > 100 && !floatingState.isSmall) {
+        ref.read(floatingButtonStateProvider.notifier).changeButtonSize(true);
+      } else if (scrollController.position.pixels < 100 && floatingState.isSmall) {
+        ref.read(floatingButtonStateProvider.notifier).changeButtonSize(false);
       }
     });
     super.initState();
@@ -31,8 +31,6 @@ class _HomeFragmentState extends ConsumerState<HomeFragment> {
     return ListView(
       controller: scrollController,
       children: [
-        Container(height: 500, color: Colors.red),
-        Container(height: 500, color: Colors.blue),
         Container(height: 500, color: Colors.red),
         Container(height: 500, color: Colors.blue),
         Container(height: 500, color: Colors.red),

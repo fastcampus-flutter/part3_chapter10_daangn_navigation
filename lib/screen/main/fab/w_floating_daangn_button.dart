@@ -1,92 +1,111 @@
 import 'package:fast_app_base/common/cli_common.dart';
 import 'package:fast_app_base/common/common.dart';
-import 'package:fast_app_base/screen/main/fab/floating_small_provider.dart';
+import 'package:fast_app_base/screen/main/fab/w_floating_daagn_button.riverpod.dart';
+import 'package:fast_app_base/screen/main/s_main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final floatingExpandedProvider = StateProvider((ref) {
-  return false;
-});
+import '../../../common/widget/animated_width_collapse.dart';
 
-class FloatingDaangnButton extends ConsumerStatefulWidget {
-  const FloatingDaangnButton({super.key});
+class FloatingDaangnButton extends ConsumerWidget {
+  FloatingDaangnButton({super.key});
+
+  final duration = 300.ms;
 
   @override
-  ConsumerState<FloatingDaangnButton> createState() => _FloatingDaangnButtonState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final floatingButtonState = ref.watch(floatingButtonStateProvider);
+    final isExpanded = floatingButtonState.isExpanded;
+    final isSmall = floatingButtonState.isSmall;
 
-class _FloatingDaangnButtonState extends ConsumerState<FloatingDaangnButton> {
-  @override
-  Widget build(BuildContext context) {
-    final isExpanded = ref.watch(floatingExpandedProvider);
-    final isSmall = ref.watch(isFloatingButtonSmallProvider);
+
     return Stack(
       children: [
-        Positioned.fill(
-            child: IgnorePointer(
+        IgnorePointer(
           ignoring: !isExpanded,
           child: AnimatedContainer(
-            duration: 300.ms,
-            color: isExpanded ? Colors.black.withOpacity(0.3) : Colors.transparent,
+            duration: duration,
+            color: isExpanded ? Colors.black.withOpacity(0.4) : Colors.transparent,
           ),
-        )),
+        ),
         Align(
-          alignment: Alignment.bottomRight,
-          child: Tap(
-            onTap: () {
-              ref.read(floatingExpandedProvider.notifier).state = !isExpanded;
-            },
-            child: AnimatedContainer(
-              height: 60,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              duration: 100.ms,
-              decoration:
-                  BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(30)),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.add),
-                  AnimatedWidthCollapse(
-                    visible: !isSmall,
-                    duration: 100.ms,
-                    child: '글쓰기'.text.white.make(),
-                  )
-                ],
-              ),
-            ).pOnly(bottom: 80, right: 20),
-          ),
-        )
+            alignment: Alignment.bottomRight,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                AnimatedOpacity(
+                  opacity: isExpanded ? 1 : 0,
+                  duration: duration,
+                  child: Container(
+                    width: 160,
+                    padding: const EdgeInsets.all(15),
+                    margin: const EdgeInsets.only(right: 15, bottom: 10),
+                    decoration: BoxDecoration(
+                        color: context.appColors.floatingActionLayer,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _floatItem('알바', '$basePath/fab/fab_01.png'),
+                        _floatItem('과외/클래스', '$basePath/fab/fab_02.png'),
+                        _floatItem('농수산물', '$basePath/fab/fab_03.png'),
+                        _floatItem('부동산', '$basePath/fab/fab_04.png'),
+                        _floatItem('중고차', '$basePath/fab/fab_05.png'),
+                      ],
+                    ),
+                  ),
+                ),
+                Tap(
+                  onTap: () {
+                    ref.read(floatingButtonStateProvider.notifier).onTapButton();
+                  },
+                  child: AnimatedContainer(
+                    duration: duration,
+                    height: 60,
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    decoration: BoxDecoration(
+                        color: isExpanded
+                            ? context.appColors.floatingActionLayer
+                            : const Color(0xffff791f),
+                        borderRadius: BorderRadius.circular(30)),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedRotation(
+                            turns: isExpanded ? 0.125 : 0,
+                            duration: duration,
+                            child: const Icon(Icons.add)),
+                        AnimatedWidthCollapse(
+                          visible: !isSmall,
+                          duration: duration,
+                          child: '글쓰기'.text.make(),
+                        )
+                      ],
+                    ),
+                  ).pOnly(
+                      bottom: MainScreenState.bottomNavigationBarHeight +
+                          context.viewPaddingBottom +
+                          10,
+                      right: 20),
+                ),
+              ],
+            ))
       ],
     );
   }
-}
 
-class AnimatedWidthCollapse extends StatelessWidget {
-  final bool visible;
-  final Widget child;
-  final Duration duration;
-
-  const AnimatedWidthCollapse({
-    super.key,
-    required this.visible,
-    required this.child,
-    required this.duration,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedSize(
-      duration: duration,
-      child: Container(
-        constraints: visible
-            ? const BoxConstraints(
-                maxWidth: double.infinity,
-              )
-            : const BoxConstraints(
-                maxWidth: 0.0,
-              ),
-        child: visible ? child : Container(),
-      ),
+  _floatItem(String title, String imagePath) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(
+          imagePath,
+          width: 30,
+        ),
+        const Width(8),
+        title.text.make(),
+      ],
     );
   }
 }
