@@ -59,7 +59,7 @@ class FloatingDaangnButton extends ConsumerWidget {
                 ),
                 Tap(
                   onTap: () {
-                    ref.read(floatingButtonStateProvider.notifier).onTapButton();
+                    ref.read(floatingButtonStateProvider.notifier).toggleMenu();
                   },
                   child: AnimatedContainer(
                     duration: duration,
