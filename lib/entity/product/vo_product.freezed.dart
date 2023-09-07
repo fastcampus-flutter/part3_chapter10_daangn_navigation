@@ -19,7 +19,6 @@ mixin _$Product {
   User get user => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   int get price => throw _privateConstructorUsedError;
-  String get description => throw _privateConstructorUsedError;
   ProductStatus get status => throw _privateConstructorUsedError;
   List<String> get images => throw _privateConstructorUsedError;
 
@@ -36,7 +35,6 @@ abstract class $ProductCopyWith<$Res> {
       {User user,
       String name,
       int price,
-      String description,
       ProductStatus status,
       List<String> images});
 
@@ -59,7 +57,6 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
     Object? user = null,
     Object? name = null,
     Object? price = null,
-    Object? description = null,
     Object? status = null,
     Object? images = null,
   }) {
@@ -76,10 +73,6 @@ class _$ProductCopyWithImpl<$Res, $Val extends Product>
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
               as int,
-      description: null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
       status: null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -111,7 +104,6 @@ abstract class _$$_ProductCopyWith<$Res> implements $ProductCopyWith<$Res> {
       {User user,
       String name,
       int price,
-      String description,
       ProductStatus status,
       List<String> images});
 
@@ -132,7 +124,6 @@ class __$$_ProductCopyWithImpl<$Res>
     Object? user = null,
     Object? name = null,
     Object? price = null,
-    Object? description = null,
     Object? status = null,
     Object? images = null,
   }) {
@@ -149,10 +140,6 @@ class __$$_ProductCopyWithImpl<$Res>
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
               as int,
-      null == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
-              as String,
       null == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -168,8 +155,8 @@ class __$$_ProductCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_Product implements _Product {
-  const _$_Product(this.user, this.name, this.price, this.description,
-      this.status, final List<String> images)
+  const _$_Product(
+      this.user, this.name, this.price, this.status, final List<String> images)
       : _images = images;
 
   @override
@@ -178,8 +165,6 @@ class _$_Product implements _Product {
   final String name;
   @override
   final int price;
-  @override
-  final String description;
   @override
   final ProductStatus status;
   final List<String> _images;
@@ -192,7 +177,7 @@ class _$_Product implements _Product {
 
   @override
   String toString() {
-    return 'Product(user: $user, name: $name, price: $price, description: $description, status: $status, images: $images)';
+    return 'Product(user: $user, name: $name, price: $price, status: $status, images: $images)';
   }
 
   @override
@@ -203,15 +188,13 @@ class _$_Product implements _Product {
             (identical(other.user, user) || other.user == user) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.price, price) || other.price == price) &&
-            (identical(other.description, description) ||
-                other.description == description) &&
             (identical(other.status, status) || other.status == status) &&
             const DeepCollectionEquality().equals(other._images, _images));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, user, name, price, description,
-      status, const DeepCollectionEquality().hash(_images));
+  int get hashCode => Object.hash(runtimeType, user, name, price, status,
+      const DeepCollectionEquality().hash(_images));
 
   @JsonKey(ignore: true)
   @override
@@ -221,13 +204,8 @@ class _$_Product implements _Product {
 }
 
 abstract class _Product implements Product {
-  const factory _Product(
-      final User user,
-      final String name,
-      final int price,
-      final String description,
-      final ProductStatus status,
-      final List<String> images) = _$_Product;
+  const factory _Product(final User user, final String name, final int price,
+      final ProductStatus status, final List<String> images) = _$_Product;
 
   @override
   User get user;
@@ -235,8 +213,6 @@ abstract class _Product implements Product {
   String get name;
   @override
   int get price;
-  @override
-  String get description;
   @override
   ProductStatus get status;
   @override
