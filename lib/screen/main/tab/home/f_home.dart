@@ -36,42 +36,44 @@ class _HomeFragmentState extends ConsumerState<HomeFragment> {
   @override
   Widget build(BuildContext context) {
     final postList = ref.watch(postProvider);
-    return Column(
-      children: [
-        AppBar(
-          title: PopupMenuButton<String>(
-            onSelected: (value) {
-              setState(() {
-                title = value;
-              });
-            },
-            itemBuilder: (BuildContext context) => ["다트동", "앱동"]
-                .map((e) => PopupMenuItem(
-                      value: e,
-                      child: Text(e),
-                    ))
-                .toList(),
-            child: Text(title),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Nav.push(NotificationScreen());
+    return Material(
+      child: Column(
+        children: [
+          AppBar(
+            title: PopupMenuButton<String>(
+              onSelected: (value) {
+                setState(() {
+                  title = value;
+                });
               },
-              icon: const Icon(Icons.notifications_none_rounded),
-            )
-          ],
-        ),
-        Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.only(bottom: FloatingDaangnButton.height),
-            controller: scrollController,
-            itemBuilder: (context, index) => ProductPostItem(postList[index]),
-            itemCount: postList.length,
-            separatorBuilder: (context, index) => const Line().pSymmetric(h: 15),
+              itemBuilder: (BuildContext context) => ["다트동", "앱동"]
+                  .map((e) => PopupMenuItem(
+                        value: e,
+                        child: Text(e),
+                      ))
+                  .toList(),
+              child: Text(title),
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  Nav.push(NotificationScreen());
+                },
+                icon: const Icon(Icons.notifications_none_rounded),
+              )
+            ],
           ),
-        ),
-      ],
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.only(bottom: FloatingDaangnButton.height),
+              controller: scrollController,
+              itemBuilder: (context, index) => ProductPostItem(postList[index]),
+              itemCount: postList.length,
+              separatorBuilder: (context, index) => const Line().pSymmetric(h: 15),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

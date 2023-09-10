@@ -57,6 +57,7 @@ class MainScreenState extends ConsumerState<MainScreen> with SingleTickerProvide
                   child: pages,
                 ),
               ),
+              resizeToAvoidBottomInset: false,
               bottomNavigationBar: _buildBottomNavigationBar(context),
             ),
             AnimatedOpacity(
@@ -96,8 +97,9 @@ class MainScreenState extends ConsumerState<MainScreen> with SingleTickerProvide
   }
 
   Widget _buildBottomNavigationBar(BuildContext context) {
+    print(context.viewPaddingBottom);
     return Container(
-      height: bottomNavigationBarHeight,
+      height: bottomNavigationBarHeight + context.viewPaddingBottom,
       decoration: const BoxDecoration(
         boxShadow: [
           BoxShadow(color: Colors.black26, spreadRadius: 0, blurRadius: 10),

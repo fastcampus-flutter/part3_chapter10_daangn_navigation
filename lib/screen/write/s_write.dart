@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:fast_app_base/common/common.dart';
 import 'package:fast_app_base/common/util/app_keyboard_util.dart';
 import 'package:fast_app_base/common/widget/round_button_theme.dart';
@@ -5,13 +8,17 @@ import 'package:fast_app_base/common/widget/w_round_button.dart';
 import 'package:fast_app_base/entity/post/vo_simple_product_post.dart';
 import 'package:fast_app_base/entity/product/product_status.dart';
 import 'package:fast_app_base/entity/user/vo_address.dart';
+import 'package:fast_app_base/screen/dialog/d_message.dart';
 import 'package:fast_app_base/screen/main/tab/home/provider/post_provider.dart';
 import 'package:fast_app_base/screen/post_detail/s_post_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../entity/dummies.dart';
 import '../../entity/product/vo_product.dart';
+import 'd_select_image_source.dart';
 
 class WriteScreen extends ConsumerStatefulWidget {
   const WriteScreen({super.key});
@@ -21,7 +28,7 @@ class WriteScreen extends ConsumerStatefulWidget {
 }
 
 class _WriteScreenState extends ConsumerState<WriteScreen> with KeyboardDetector {
-  final List<String> imageList = [picSum(442)];
+  final List<String> imageList = [];
 
   final titleController = TextEditingController();
   final priceController = TextEditingController();
@@ -50,22 +57,57 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with KeyboardDetector
         title: '내 물건 팔기'.text.bold.make(),
         actions: [Tap(onTap: () {}, child: '임시저장'.text.make().p(15))],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 150),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _ImageSelectWidget(
-              imageList,
-              onTap: () {},
-            ),
-            _TitleEditor(titleController),
-            height30,
-            _PriceEditor(priceController),
-            height30,
-            _DescEditor(descriptionController),
-          ],
-        ).pSymmetric(h: 15),
+      body: Tap(
+        onTap: () {
+          AppKeyboardUtil.hide(context);
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 150),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _ImageSelectWidget(
+                imageList,
+                onTapDeleteImage: (imagePath) {
+                  setState(() {
+                    imageList.remove(imagePath);
+                  });
+                },
+                onTap: () async {
+                  final selectedSource = await SelectImageSourceDialog().show();
+
+                  if (selectedSource == null) {
+                    return;
+                  }
+                  try {
+                    final file = await ImagePicker().pickImage(source: selectedSource);
+                    if (file == null) {
+                      return;
+                    }
+                    setState(() {
+                      imageList.add(file.path);
+                    });
+                  } on PlatformException catch(e){
+                    switch(e.code){
+                      case 'invalid_image':
+                        MessageDialog('지원하지 않는 이미지 형식입니다.').show();
+                    }
+                  }
+
+                  catch (e) {
+                    //사진 권한이 필요해요 -> 앱 설정으로
+                    print(e);
+                  }
+                },
+              ),
+              _TitleEditor(titleController),
+              height30,
+              _PriceEditor(priceController),
+              height30,
+              _DescEditor(descriptionController),
+            ],
+          ).pSymmetric(h: 15),
+        ),
       ),
       bottomSheet: isKeyboardOn
           ? null
@@ -126,10 +168,12 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with KeyboardDetector
 class _ImageSelectWidget extends StatelessWidget {
   final List<String> imageList;
   final VoidCallback onTap;
+  final void Function(String path) onTapDeleteImage;
 
   const _ImageSelectWidget(
     this.imageList, {
     required this.onTap,
+    required this.onTapDeleteImage,
     super.key,
   });
 
@@ -141,24 +185,70 @@ class _ImageSelectWidget extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            SizedBox(
-              width: 80,
-              height: 80,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.camera_alt),
-                  RichText(
-                      text: TextSpan(children: [
-                    TextSpan(
-                        text: imageList.length.toString(), style: TextStyle(color: Colors.orange)),
-                    TextSpan(text: '/10')
-                  ])),
-                ],
-              ).box.rounded.border(color: Colors.grey).make(),
-            )
+            SelectImageButton(onTap: onTap, imageList: imageList).pOnly(top: 10, right: 8),
+            ...imageList.map((imagePath) => Stack(
+                  children: [
+                    SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Image.file(
+                            File(imagePath),
+                            fit: BoxFit.fill,
+                          ).box.rounded.border(color: Colors.grey).make()),
+                    ).pOnly(left: 4, right: 10, top: 10),
+                    Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Tap(
+                          onTap: () {
+                            onTapDeleteImage(imagePath);
+                          },
+                          child: Transform.rotate(
+                            angle: pi / 4,
+                            child: Icon(Icons.add_circle),
+                          ).pOnly(left: 30, bottom: 30),
+                        ),
+                      ),
+                    )
+                  ],
+                ))
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SelectImageButton extends StatelessWidget {
+  const SelectImageButton({
+    super.key,
+    required this.onTap,
+    required this.imageList,
+  });
+
+  final VoidCallback onTap;
+  final List<String> imageList;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tap(
+      onTap: onTap,
+      child: SizedBox(
+        width: 80,
+        height: 80,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.camera_alt),
+            RichText(
+                text: TextSpan(children: [
+              TextSpan(text: imageList.length.toString(), style: TextStyle(color: Colors.orange)),
+              TextSpan(text: '/10')
+            ])),
+          ],
+        ).box.rounded.border(color: Colors.grey).make(),
       ),
     );
   }
