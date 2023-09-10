@@ -13,7 +13,12 @@ import 'w_menu_drawer.dart';
 final currentTabProvider = StateProvider((ref) => TabItem.home);
 
 class MainScreen extends ConsumerStatefulWidget {
-  const MainScreen({super.key});
+  final TabItem firstTab;
+
+  const MainScreen({
+    super.key,
+    this.firstTab = TabItem.home,
+  });
 
   @override
   ConsumerState<MainScreen> createState() => MainScreenState();
@@ -25,6 +30,7 @@ class MainScreenState extends ConsumerState<MainScreen> with SingleTickerProvide
       TabItem.values.map((e) => GlobalKey<NavigatorState>()).toList();
 
   TabItem get _currentTab => ref.watch(currentTabProvider);
+
   int get _currentIndex => tabs.indexOf(_currentTab);
 
   GlobalKey<NavigatorState> get _currentTabNavigationKey => navigatorKeys[_currentIndex];
@@ -42,6 +48,16 @@ class MainScreenState extends ConsumerState<MainScreen> with SingleTickerProvide
   }
 
   @override
+  void didUpdateWidget(covariant MainScreen oldWidget) {
+    if (oldWidget.firstTab != widget.firstTab) {
+      delay(() {
+        ref.read(currentTabProvider.notifier).state = widget.firstTab;
+      }, 0.ms);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _handleBackPressed,
@@ -49,12 +65,13 @@ class MainScreenState extends ConsumerState<MainScreen> with SingleTickerProvide
         child: Stack(
           children: [
             Scaffold(
-              extendBody: extendBody, //bottomNavigationBar 아래 영역 까지 그림
+              extendBody: extendBody,
+              //bottomNavigationBar 아래 영역 까지 그림
               drawer: const MenuDrawer(),
               drawerEnableOpenDragGesture: !Platform.isIOS,
               body: Container(
-                padding: EdgeInsets.only(
-                    bottom: extendBody ? 60 - bottomNavigationBarBorderRadius : 0),
+                padding:
+                    EdgeInsets.only(bottom: extendBody ? 60 - bottomNavigationBarBorderRadius : 0),
                 child: SafeArea(
                   bottom: !extendBody,
                   child: pages,

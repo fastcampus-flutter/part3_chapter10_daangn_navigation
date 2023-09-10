@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 extension ColorExtension on Color {
   Color getSwatchByBrightness(int swatchValue) {
-    final Brightness brightness = App.navigatorKey.currentContext!.themeType.themeData.brightness;
+    final Brightness brightness = App.scaffoldMessengerKey.currentContext!.themeType.themeData.brightness;
     if (brightness == Brightness.light) {
       return swatchShade(swatchValue);
     } else {

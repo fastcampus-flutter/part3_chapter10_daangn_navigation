@@ -22,6 +22,10 @@ enum TabItem {
   const TabItem(this.activeIcon, this.tabName, this.firstPage, {IconData? inActiveIcon})
       : inActiveIcon = inActiveIcon ?? activeIcon;
 
+  static TabItem find(String? name){
+    return values.asNameMap()[name] ?? TabItem.home;
+  }
+
   BottomNavigationBarItem toNavigationBarItem(BuildContext context, {required bool isActivated}) {
     return BottomNavigationBarItem(
         icon: Icon(
