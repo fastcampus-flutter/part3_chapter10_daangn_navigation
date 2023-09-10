@@ -66,7 +66,18 @@ class _PostDetail extends HookWidget {
                     simpleProductPost.product.user,
                     address: simpleProductPost.address,
                   ),
-                  PostContent(simpleProductPost: simpleProductPost, productPost: productPost)
+                  Tap(
+                      onTap: () {
+                        Nav.push(
+                            PostDetailScreen(
+                              simpleProductPost.id,
+                              simpleProductPost: simpleProductPost,
+                            ),
+                            context: context,
+                            durationMs: 800);
+                      },
+                      child: PostContent(
+                          simpleProductPost: simpleProductPost, productPost: productPost))
                 ],
               ),
             ),
@@ -158,9 +169,12 @@ class _ImagePager extends StatelessWidget {
           PageView(
             controller: pageController,
             children: simpleProductPost.product.images
-                .map((url) => CachedNetworkImage(
-                      imageUrl: url,
-                      fit: BoxFit.fill,
+                .map((url) => Hero(
+                      tag: '${simpleProductPost.id}_$url',
+                      child: CachedNetworkImage(
+                        imageUrl: url,
+                        fit: BoxFit.fill,
+                      ),
                     ))
                 .toList(),
           ),

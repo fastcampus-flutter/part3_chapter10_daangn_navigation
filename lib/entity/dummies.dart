@@ -96,4 +96,4 @@ final post3 = SimpleProductPost(
   DateTime.now().subtract(10.seconds),
 );
 
-final postList = [post1, post2, post3, post1, post2, post3];
+final postList = [post1, post2, post3];

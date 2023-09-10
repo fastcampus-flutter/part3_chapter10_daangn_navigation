@@ -19,7 +19,9 @@ class PostContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        simpleProductPost.title.text.bold.make(),
+        Hero(
+            tag: '${simpleProductPost.id}_title',
+            child: Material(child: simpleProductPost.title.text.bold.make())),
         height20,
         timeago
             .format(simpleProductPost.createdTime, locale: context.locale.languageCode)
