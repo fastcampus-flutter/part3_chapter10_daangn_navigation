@@ -21,7 +21,9 @@ class PostContent extends StatelessWidget {
       children: [
         Hero(
             tag: '${simpleProductPost.id}_title',
-            child: Material(child: simpleProductPost.title.text.bold.make())),
+            child: Material(
+                type: MaterialType.transparency,
+                child: simpleProductPost.title.text.bold.make())),
         height20,
         timeago
             .format(simpleProductPost.createdTime, locale: context.locale.languageCode)

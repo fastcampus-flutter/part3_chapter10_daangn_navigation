@@ -17,6 +17,7 @@ class App extends StatefulWidget {
   static const defaultTheme = CustomTheme.dark;
   static bool isForeground = true;
   static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey();
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
   const App({super.key});
 
@@ -24,7 +25,7 @@ class App extends StatefulWidget {
   State<App> createState() => AppState();
 }
 
-class AppState extends State<App> with WidgetsBindingObserver {
+class AppState extends State<App> with WidgetsBindingObserver, Nav {
   final ValueKey<String> _scaffoldKey = const ValueKey<String>('App scaffold');
 
   final _auth = DaangnAuth();
@@ -64,6 +65,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
   }
 
   late final GoRouter _router = GoRouter(
+    navigatorKey: App.navigatorKey,
     routes: <GoRoute>[
       GoRoute(
         path: '/',
@@ -145,4 +147,7 @@ class AppState extends State<App> with WidgetsBindingObserver {
     }
     super.didChangeAppLifecycleState(state);
   }
+
+  @override
+  GlobalKey<NavigatorState> get navigatorKey => App.navigatorKey;
 }

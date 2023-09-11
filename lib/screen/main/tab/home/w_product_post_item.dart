@@ -15,14 +15,14 @@ class ProductPostItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tap(
       onTap: () {
-        context.go('/main/localLife/${post.id}', extra: post);
+        //context.go('/main/localLife/${post.id}', extra: post);
 
-        // Nav.push(
-        //     PostDetailScreen(
-        //       post.id,
-        //       simpleProductPost: post,
-        //     ),
-        //     durationMs: 800);
+        Nav.push(
+            PostDetailScreen(
+              post.id,
+              simpleProductPost: post,
+            ),
+            durationMs: 400, navAni: NavAni.Fade);
       },
       child: Stack(
         children: [
@@ -44,7 +44,9 @@ class ProductPostItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Hero(tag: '${post.id}_title', child: Material(child: post.title.text.size(17).bold.make())),
+                    Hero(tag: '${post.id}_title', child: Material(
+                        type: MaterialType.transparency,
+                        child: post.title.text.size(17).bold.make())),
                     Row(
                       children: [
                         post.address.simpleAddress.text
